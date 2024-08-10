@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch } from "react-icons/fa";
 import { MdMyLocation } from "react-icons/md";
 
 const Inputs = ({ setQuery, setUnits }) => {
   const [city, setCity] = useState('');
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      setCurrentDateTime(new Date());
+    };
+
+    // Update the date and time every second
+    const intervalId = setInterval(updateDateTime, 1000);
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleSearchClick = () => {
     if (city !== "") setQuery({ q: city });
@@ -18,9 +31,14 @@ const Inputs = ({ setQuery, setUnits }) => {
     }
   };
 
+  const formatDateTime = (date) => {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+  };
+
   return (
-    <div className="flex flex-row justify-center my-6">
-      <div className="flex flex-row w-3/4 items-center space-x-4 justify-center">
+    <div className="flex flex-col items-center my-6">
+      <div className="flex flex-row w-3/4 items-center space-x-4 justify-center mb-4">
         <input
           value={city}
           onChange={(e) => setCity(e.target.value)}
@@ -54,8 +72,12 @@ const Inputs = ({ setQuery, setUnits }) => {
           </button>
         </div>
       </div>
+      <div className="text-amber-50 text-lg font-medium">
+        {formatDateTime(currentDateTime)}
+      </div>
     </div>
   );
 };
 
 export default Inputs;
+
